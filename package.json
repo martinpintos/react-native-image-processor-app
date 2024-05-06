@@ -15,6 +15,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@gorhom/bottom-sheet": "^4",
+    "@react-native-community/slider": "^4.5.2",
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.6.8",
     "clsx": "^2.1.1",
