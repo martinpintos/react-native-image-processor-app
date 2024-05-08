@@ -79,3 +79,21 @@ npx expo start
   - `Edit/`: Components specific to the edit screen
   - `common/`: Common components used in multiple screens
 - `store/`: Contains the Zustand store and hooks
+
+## Design Decisions
+
+Design Decisions
+
+1. Expo Framework: The app is built using the Expo framework, which provides a set of tools and services for building, deploying, and quickly iterating on React Native apps. Expo simplifies the development process by providing a managed workflow and a set of pre-built components and APIs.
+
+2. Expo Router: The app utilizes the expo-router library for handling navigation. Expo Router allows for file-based routing, where each file in the app/ directory corresponds to a route in the app. This approach simplifies navigation configuration and provides a more intuitive way to structure the app's screens and routes.
+
+3. Zustand for State Management: The app uses the Zustand library for state management. Zustand is a lightweight and easy-to-use state management solution that provides a simple and efficient way to manage the app's state. It allows for creating a centralized store and accessing state across components without the need for complex boilerplate code.
+
+4. Reusable Components: The app is structured using reusable components to ensure a modular and maintainable codebase. Components are organized into two main categories: Edit/ for components specific to the edit screen and common/ for components used throughout the app. This separation enhances code organization and promotes component reusability.
+
+5. Expo Libraries for Enhanced Functionality: Several Expo libraries are utilized to provide additional functionality to the app. These include expo-image for optimized image rendering, expo-file-system and expo-media-library for image downloading and saving and expo-clipboard for copying data to the clipboard.
+
+## Architecture
+
+The architecture of the React Native Image Processor App follows a component-based and modular approach, harnessing the power of React Native and Expo. The app is structured into different layers and components to ensure separation of concerns and maintainability.

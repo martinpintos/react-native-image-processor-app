@@ -1,4 +1,4 @@
-import { FlatList, Pressable } from "react-native";
+import { FlatList, Pressable, useColorScheme } from "react-native";
 import clsx from "clsx";
 import { useEffect } from "react";
 import { useGalleryStore } from "@/store/useGalleryStore";
@@ -10,6 +10,7 @@ import { useImageStore } from "@/store/useImageStore";
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export default function GalleryScreen() {
+  const colorScheme = useColorScheme();
   const { gallery, fetchGallery } = useGalleryStore();
   const { resetState } = useImageStore();
 
@@ -53,7 +54,9 @@ export default function GalleryScreen() {
           onPress={() => resetState()}
           onPressOut={onPressOut}
           className={clsx(
-            "flex-1 h-64 items-center justify-center border-[0.7px] border-black overflow-hidden",
+            `flex-1 h-64 items-center justify-center border-[0.8px] ${
+              colorScheme === "dark" ? "border-neutral-700" : "border-neutral-200"
+            } overflow-hidden`,
             !isEvenRow && isLastItem && "max-w-[50%]"
           )}
         >
