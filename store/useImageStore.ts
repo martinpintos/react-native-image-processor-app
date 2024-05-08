@@ -1,57 +1,83 @@
 import { create } from "zustand";
 
 type ImageState = {
-  params: Record<string, string>;
-  history: string[];
-  updateParams: (params: Record<string, string>) => void;
-  currentUrl: string;
-  revertToHistory: () => void;
+  baseUrl: string;
+  params: Record<string, string | undefined>;
+  history: { id: number; params: Record<string, string | undefined>; thumbnail: string }[];
+  updateParams: (params: Record<string, string | undefined>) => void;
+  revertToHistory: (id: number) => void;
+  resetState: () => void;
 };
 
 const defaultParams = {
-  fit: "crop",
-  h: "600",
-  w: "900",
   auto: "compress",
+  fit: "crop",
+  h: "384",
+  w: "430",
+  // bri: "0",
+  // con: "0",
+  // exp: "0",
+  // gam: "0",
 };
 
-const createUrlWithParams = (baseUrl: string, params: Record<string, string>) => {
-  return `${baseUrl}?${Object.entries(params)
-    .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
-    .join("&")}`;
-};
+export const useImageStore = create<ImageState>((set, get) => ({
+  baseUrl: "",
+  params: defaultParams,
+  history: [],
+  updateParams: (newParams) => {
+    set((state) => {
+      const mergedParams = { ...state.params };
+      Object.keys(newParams).forEach((key) => {
+        if (newParams[key] === undefined) {
+          delete mergedParams[key];
+        } else {
+          mergedParams[key] = newParams[key];
+        }
+      });
 
-export const useImageStore = (baseUrl: string) =>
-  create<ImageState>((set) => ({
-    params: defaultParams,
-    history: [createUrlWithParams(baseUrl, defaultParams)],
-    updateParams: (newParams) =>
-      set((state) => {
-        const mergedParams = { ...state.params, ...newParams };
-        const newUrl = createUrlWithParams(baseUrl, mergedParams);
-        return {
+      const queryString = Object.entries(mergedParams)
+        .filter(([_, value]) => value !== undefined)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
+        .join("&");
+
+      const thumbnailUrl = `${get().baseUrl}?${queryString}`;
+
+      const currentInteractionIndex = state.history.findIndex(
+        (item) => JSON.stringify(item.params) === JSON.stringify(state.params)
+      );
+      const newHistory =
+        currentInteractionIndex !== -1
+          ? state.history.slice(0, currentInteractionIndex + 1)
+          : state.history;
+
+      if (JSON.stringify(state.params) !== JSON.stringify(mergedParams)) {
+        newHistory.push({
+          id: newHistory.length + 1,
           params: mergedParams,
-          history: [...state.history, newUrl],
-          currentUrl: newUrl,
-        };
-      }),
-    revertToHistory: () =>
-      set((state) => {
-        const newHistory = state.history.slice(0, -1);
-        const newUrl = newHistory[newHistory.length - 1] || baseUrl;
-        const params = newUrl
-          .split("?")[1]
-          .split("&")
-          .reduce<Record<string, string>>((acc, param) => {
-            const [key, value] = param.split("=");
-            acc[key] = decodeURIComponent(value);
-            return acc;
-          }, {});
-        return {
-          params,
-          history: newHistory,
-          currentUrl: newUrl,
-        };
-      }),
-    currentUrl: createUrlWithParams(baseUrl, defaultParams),
-  }));
+          thumbnail: thumbnailUrl,
+        });
+      }
+
+      return {
+        params: mergedParams,
+        history: newHistory,
+      };
+    });
+  },
+  revertToHistory: (id) => {
+    set((state) => {
+      const historyIndex = state.history.findIndex((item) => item.id === id);
+      if (historyIndex !== -1) {
+        const historyItem = state.history[historyIndex];
+        return { ...state, params: historyItem.params };
+      }
+      return state;
+    });
+  },
+  resetState: () => {
+    set(() => ({
+      params: defaultParams,
+      history: [],
+    }));
+  },
+}));

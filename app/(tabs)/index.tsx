@@ -1,15 +1,17 @@
-import { FlatList, Pressable, TouchableOpacity } from "react-native";
+import { FlatList, Pressable } from "react-native";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGalleryStore } from "@/store/useGalleryStore";
 import { Link } from "expo-router";
 import { Image } from "expo-image";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { useImageStore } from "@/store/useImageStore";
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export default function GalleryScreen() {
   const { gallery, fetchGallery } = useGalleryStore();
+  const { resetState } = useImageStore();
 
   useEffect(() => {
     fetchGallery();
@@ -48,6 +50,7 @@ export default function GalleryScreen() {
       >
         <Pressable
           onPressIn={onPressIn}
+          onPress={() => resetState()}
           onPressOut={onPressOut}
           className={clsx(
             "flex-1 h-64 items-center justify-center border-[0.7px] border-black overflow-hidden",
@@ -72,7 +75,6 @@ export default function GalleryScreen() {
       data={gallery}
       keyExtractor={(item) => item.name.toString()}
       renderItem={({ item, index }) => <ImageItem item={item} index={index} />}
-      maxToRenderPerBatch={6}
     />
   );
 }
