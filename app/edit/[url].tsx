@@ -343,7 +343,7 @@ export default function EditScreen() {
   return (
     <>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "right", "bottom", "left"]}>
-        <TopNav onPressExport={() => {}} />
+        <TopNav currentUrl={currentUrl} />
         <Separator height={3} />
         <EditImage currentUrl={currentUrl as string} />
         <Separator height={3} />

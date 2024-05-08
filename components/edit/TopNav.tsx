@@ -3,9 +3,29 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import clsx from "clsx";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 
-export default function TopNav({ onPressExport }: { onPressExport: () => void }) {
+export default function TopNav({ currentUrl }: { currentUrl: string }) {
   const colorScheme = useColorScheme();
+
+  const downloadImage = async (uri: string) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
+    const fileUri = FileSystem.cacheDirectory + "image.jpg";
+    await FileSystem.downloadAsync(uri, fileUri)
+      .then(async ({ uri }) => {
+        await MediaLibrary.saveToLibraryAsync(uri);
+        alert("Image saved to gallery!");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <View className="flex-row justify-between h-14 items-center w-full px-5">
@@ -23,7 +43,7 @@ export default function TopNav({ onPressExport }: { onPressExport: () => void })
       </Link>
 
       <TouchableOpacity
-        onPress={onPressExport}
+        onPress={() => downloadImage(currentUrl)}
         className="h-full justify-center pl-2 items-end rounded-sm"
       >
         <Text

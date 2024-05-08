@@ -14,10 +14,6 @@ const defaultParams = {
   fit: "crop",
   h: "384",
   w: "430",
-  // bri: "0",
-  // con: "0",
-  // exp: "0",
-  // gam: "0",
 };
 
 export const useImageStore = create<ImageState>((set, get) => ({
